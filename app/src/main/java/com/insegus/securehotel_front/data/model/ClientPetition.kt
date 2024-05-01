@@ -1,10 +1,9 @@
 package com.insegus.securehotel_front.data.model
 
-data class MaterialPetition(
+data class ClientPetition(
     val clientId: String,
-    val name: String,
+    val nameMaterial: String,
     val amount: Int,
     val digitalSignature: String,
-    val orderDate: String,
-    val isValid: Boolean
+    val orderDate: String
 )
