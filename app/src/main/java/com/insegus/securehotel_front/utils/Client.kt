@@ -14,12 +14,12 @@ class Client(private val host: String, private val port: Int){
     private var clientSocket: SSLSocket? = null
 
     fun connect(context: Context){
-        val sslContext = generateSSLContext(context, "new_keystore.jks", "new_alias", "12345".toCharArray())
+        val sslContext = generateSSLContext(context)
         val socketFactory: SSLSocketFactory = sslContext.socketFactory
 
-        clientSocket = socketFactory.createSocket() as SSLSocket
-        clientSocket!!.connect(InetSocketAddress(host, port), 2000)
-        clientSocket!!.startHandshake()
+        //clientSocket = socketFactory.createSocket() as SSLSocket
+        //clientSocket!!.connect(InetSocketAddress(host, port), 2000)
+        // clientSocket!!.startHandshake()
 
     }
     fun sendMessage(message:String){
