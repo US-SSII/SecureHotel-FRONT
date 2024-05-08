@@ -27,6 +27,7 @@ import com.insegus.securehotel_front.utils.ConnectTask
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import java.text.DateFormat
 import java.util.Date
@@ -38,8 +39,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             val client = Client("10.0.2.2",12345)
-            val connectTask = ConnectTask(context, client)
-            connectTask.execute()
+            //val connectTask = ConnectTask(context, client)
 
             SecureHotelFRONTTheme {
                 // A surface container using the 'background' color from the theme
@@ -51,6 +51,13 @@ class MainActivity : ComponentActivity() {
                         Material("Sillones"),
                     )
                 ) }
+                LaunchedEffect(Unit) {
+                    withContext(Dispatchers.IO) {
+                        // Realiza la conexión en un hilo de fondo (IO) utilizando Coroutines
+                        client.connect(context)
+                        client.sendMessage("pito")
+                    }
+                }
                 Column(Modifier.fillMaxSize()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Title("Secure Hotel")

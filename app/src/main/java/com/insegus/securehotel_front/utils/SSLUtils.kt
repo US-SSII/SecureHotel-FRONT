@@ -3,14 +3,15 @@ package com.insegus.securehotel_front.utils
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.util.Log
 import com.insegus.securehotel_front.R
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 fun generateSSLContext(context: Context): SSLContext {
     val inputStream = context.resources.openRawResource(R.raw.certificate)
@@ -44,6 +45,15 @@ fun generateSSLContext(context: Context): SSLContext {
 
     // Initialize the SSLContext instance
     val sslContext = SSLContext.getInstance("TLSv1.3")
-    sslContext.init(keyManagerFactory.keyManagers, trustManagerFactory.trustManagers, null)
+    sslContext.init(keyManagerFactory.keyManagers,  arrayOf(createCustomTrustManager()), null)
     return sslContext
+}
+private fun createCustomTrustManager(): X509TrustManager {
+    return object : X509TrustManager {
+        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+
+        override fun getAcceptedIssuers(): Array<X509Certificate> = emptyArray()
+    }
 }

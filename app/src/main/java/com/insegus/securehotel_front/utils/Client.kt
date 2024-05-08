@@ -27,10 +27,8 @@ class Client(private val host: String, private val port: Int){
         val socketFactory = generateSSLContext(context).socketFactory
         val sslSocket = socketFactory.createSocket(host, port) as SSLSocket
 
-        sslSocket.enabledCipherSuites = sslSocket.supportedCipherSuites
+        sslSocket.startHandshake()
 
-        val inputStream = sslSocket.inputStream
-        val outputStream = sslSocket.outputStream
     }
     fun sendMessage(message:String){
         try{
@@ -70,6 +68,7 @@ class ConnectTask(private val context: Context, private val client: Client) : As
     override fun doInBackground(vararg params: Void?): Void? {
         // Perform network operation here using the client object
         client.connect2(context)
+        Log.d("CONNECT", "Connecting to server...")
         return null
     }
 }
