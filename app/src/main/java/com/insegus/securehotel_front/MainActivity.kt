@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -21,17 +23,26 @@ import com.insegus.securehotel_front.ui.components.PetitionButton
 import com.insegus.securehotel_front.ui.components.Title
 import com.insegus.securehotel_front.ui.theme.SecureHotelFRONTTheme
 import com.insegus.securehotel_front.utils.Client
+import com.insegus.securehotel_front.utils.ConnectTask
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 import java.text.DateFormat
 import java.util.Date
 class MainActivity : ComponentActivity() {
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val context = LocalContext.current
+            val client = Client("10.0.2.2",12345)
+            val connectTask = ConnectTask(context, client)
+            connectTask.execute()
+
             SecureHotelFRONTTheme {
                 // A surface container using the 'background' color from the theme
-                val context = LocalContext.current
                 val materials by remember { mutableStateOf(
                     mutableListOf(
                         Material("Camas"),
@@ -40,8 +51,6 @@ class MainActivity : ComponentActivity() {
                         Material("Sillones"),
                     )
                 ) }
-                val client = Client("10.0.2.2",12345)
-                client.connect(context)
                 Column(Modifier.fillMaxSize()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Title("Secure Hotel")

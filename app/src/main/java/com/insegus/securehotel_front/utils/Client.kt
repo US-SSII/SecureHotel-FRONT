@@ -1,25 +1,36 @@
 package com.insegus.securehotel_front.utils
 
 import android.content.Context
+import android.os.AsyncTask
 import android.util.Log
+import org.xml.sax.InputSource
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.InetSocketAddress
+import java.net.URL
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
+import javax.xml.parsers.SAXParserFactory
 
 
 class Client(private val host: String, private val port: Int){
     private var clientSocket: SSLSocket? = null
 
     fun connect(context: Context){
-        val sslContext = generateSSLContext()
+        val sslContext = generateSSLContext(context)
         val socketFactory: SSLSocketFactory = sslContext.socketFactory
 
-        clientSocket = socketFactory.createSocket() as SSLSocket
-        clientSocket!!.connect(InetSocketAddress(host, port), 2000)
+        clientSocket = socketFactory.createSocket(host, port) as SSLSocket
         clientSocket!!.startHandshake()
+    }
+    fun connect2(context: Context){
+        val socketFactory = generateSSLContext(context).socketFactory
+        val sslSocket = socketFactory.createSocket(host, port) as SSLSocket
 
+        sslSocket.enabledCipherSuites = sslSocket.supportedCipherSuites
+
+        val inputStream = sslSocket.inputStream
+        val outputStream = sslSocket.outputStream
     }
     fun sendMessage(message:String){
         try{
@@ -55,3 +66,11 @@ class Client(private val host: String, private val port: Int){
         }
     }
 }
+class ConnectTask(private val context: Context, private val client: Client) : AsyncTask<Void, Void, Void>() {
+    override fun doInBackground(vararg params: Void?): Void? {
+        // Perform network operation here using the client object
+        client.connect2(context)
+        return null
+    }
+}
+

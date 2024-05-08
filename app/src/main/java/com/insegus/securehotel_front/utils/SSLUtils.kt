@@ -1,16 +1,25 @@
 package com.insegus.securehotel_front.utils
 
+import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Log
+import com.insegus.securehotel_front.R
 import java.security.KeyPairGenerator
 import java.security.KeyStore
+import java.security.cert.CertificateFactory
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 
-fun generateSSLContext(): SSLContext {
+fun generateSSLContext(context: Context): SSLContext {
+    val inputStream = context.resources.openRawResource(R.raw.certificate)
+    val certificateFactory = CertificateFactory.getInstance("X.509")
+    val certificate = certificateFactory.generateCertificate(inputStream)
+
     val keyStore = KeyStore.getInstance("AndroidKeyStore")
     keyStore.load(null) // Load the keystore from the Android system's keychain
+    keyStore.setCertificateEntry("server", certificate)
 
     // Generate a new RSA key pair entry in the Android KeyStore
     val alias = "myKeyAlias"
@@ -31,6 +40,7 @@ fun generateSSLContext(): SSLContext {
 
     val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
     trustManagerFactory.init(keyStore)
+
 
     // Initialize the SSLContext instance
     val sslContext = SSLContext.getInstance("TLSv1.3")
