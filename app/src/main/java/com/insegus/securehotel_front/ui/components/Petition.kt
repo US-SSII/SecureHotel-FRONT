@@ -15,13 +15,12 @@ import androidx.compose.ui.Modifier
 @Composable
 fun PetitionButton(onConfirm: (String) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
-    var notes by remember { mutableStateOf("") }
 
     if (showDialog) {
         PetitionPopup(
             onDismiss = { showDialog = false },
             onConfirm = {
-                onConfirm(notes)
+                onConfirm(it)
                 showDialog = false
             }
         )
