@@ -1,6 +1,5 @@
 package com.insegus.securehotel_front.utils
 
-import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import java.security.KeyPairGenerator
@@ -9,32 +8,31 @@ import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 
-fun generateSSLContext(context: Context): SSLContext {
+fun generateSSLContext(): SSLContext {
     val keyStore = KeyStore.getInstance("AndroidKeyStore")
-    keyStore.load(null)
+    keyStore.load(null) // Load the keystore from the Android system's keychain
 
-    // Generate a new EC key pair entry in the Android KeyStore
-    val alias = "example"
+    // Generate a new RSA key pair entry in the Android KeyStore
+    val alias = "myKeyAlias"
     if (!keyStore.containsAlias(alias)) {
-        val keyPairGenerator = KeyPairGenerator.getInstance(
-            KeyProperties.KEY_ALGORITHM_EC, "AndroidKeyStore")
-        keyPairGenerator.initialize(
-            KeyGenParameterSpec.Builder(
-                alias,
-                KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY
-            )
-                .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                .build()
-        )
+        val keyPairGenerator = KeyPairGenerator.getInstance("RSA", "AndroidKeyStore")
+        val keyGenParameterSpec = KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_SIGN)
+            .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
+            .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
+            .setKeySize(2048)
+            .build()
+        keyPairGenerator.initialize(keyGenParameterSpec)
         keyPairGenerator.generateKeyPair()
     }
 
+    // Initialize the KeyManagerFactory and TrustManagerFactory instances
     val keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
     keyManagerFactory.init(keyStore, null)
 
     val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
     trustManagerFactory.init(keyStore)
 
+    // Initialize the SSLContext instance
     val sslContext = SSLContext.getInstance("TLSv1.3")
     sslContext.init(keyManagerFactory.keyManagers, trustManagerFactory.trustManagers, null)
     return sslContext
