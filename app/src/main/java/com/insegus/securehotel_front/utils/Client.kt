@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.net.InetSocketAddress
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 
@@ -15,9 +16,9 @@ class Client(private val host: String, private val port: Int){
         val sslContext = generateSSLContext()
         val socketFactory: SSLSocketFactory = sslContext.socketFactory
 
-        //clientSocket = socketFactory.createSocket() as SSLSocket
-        //clientSocket!!.connect(InetSocketAddress(host, port), 2000)
-        // clientSocket!!.startHandshake()
+        clientSocket = socketFactory.createSocket() as SSLSocket
+        clientSocket!!.connect(InetSocketAddress(host, port), 2000)
+        clientSocket!!.startHandshake()
 
     }
     fun sendMessage(message:String){

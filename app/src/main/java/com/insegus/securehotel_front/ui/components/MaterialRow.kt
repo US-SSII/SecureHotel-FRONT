@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.insegus.securehotel_front.R
 import com.insegus.securehotel_front.data.model.Material
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +48,6 @@ fun MaterialRow(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Checkbox
         Checkbox(
             checked = isSelected,
             onCheckedChange = {
