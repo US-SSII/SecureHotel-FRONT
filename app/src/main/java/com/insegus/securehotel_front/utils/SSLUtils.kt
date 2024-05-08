@@ -8,18 +8,17 @@ import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 
-fun generateSSLContext(context: Context): SSLContext{
-    val keyStore = KeyStore.getInstance("BKS")
-    val i: InputStream = context.resources.openRawResource(R.raw.keystore)
-    keyStore.load(i, "123456".toCharArray())
+fun generateSSLContext(context: Context, keystoreName: String, alias: String, password: CharArray): SSLContext {
+    val keyStore = KeyStore.getInstance("JKS")
+    val i: InputStream = context.resources.openRawResource(context.resources.getIdentifier(keystoreName, "raw", context.packageName))
+    keyStore.load(i, password)
 
     val keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
-    keyManagerFactory.init(keyStore, "123456".toCharArray())
+    keyManagerFactory.init(keyStore, password)
 
     val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
     trustManagerFactory.init(keyStore)
-    //TODO Añade clave pública del servidor
-    //TODO Cargar clave privada del cliente
+
     val sslContext = SSLContext.getInstance("TLSv1.3")
     sslContext.init(keyManagerFactory.keyManagers, trustManagerFactory.trustManagers, null)
     return sslContext

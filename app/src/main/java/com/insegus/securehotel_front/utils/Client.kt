@@ -14,7 +14,7 @@ class Client(private val host: String, private val port: Int){
     private var clientSocket: SSLSocket? = null
 
     fun connect(context: Context){
-        val sslContext = generateSSLContext(context)
+        val sslContext = generateSSLContext(context, "new_keystore.jks", "new_alias", "12345".toCharArray())
         val socketFactory: SSLSocketFactory = sslContext.socketFactory
 
         clientSocket = socketFactory.createSocket() as SSLSocket
