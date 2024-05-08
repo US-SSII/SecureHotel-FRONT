@@ -20,6 +20,7 @@ class Client(private val host: String, private val port: Int){
         clientSocket = socketFactory.createSocket() as SSLSocket
         clientSocket!!.connect(InetSocketAddress(host, port), 2000)
         clientSocket!!.startHandshake()
+
     }
     fun sendMessage(message:String){
         try{

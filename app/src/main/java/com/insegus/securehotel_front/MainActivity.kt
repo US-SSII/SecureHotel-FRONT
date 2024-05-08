@@ -7,18 +7,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.insegus.securehotel_front.data.model.Material
 import com.insegus.securehotel_front.ui.components.MaterialList
 import com.insegus.securehotel_front.ui.components.PetitionButton
 import com.insegus.securehotel_front.ui.components.Title
 import com.insegus.securehotel_front.ui.theme.SecureHotelFRONTTheme
+import com.insegus.securehotel_front.utils.Client
 
 class MainActivity : ComponentActivity() {
 
@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SecureHotelFRONTTheme {
                 // A surface container using the 'background' color from the theme
+                val context = LocalContext.current
                 val materials by remember { mutableStateOf(
                     mutableListOf(
                         Material("Camas"),
@@ -35,7 +36,8 @@ class MainActivity : ComponentActivity() {
                         Material("Sillones"),
                     )
                 ) }
-
+                val client = Client("10.0.2.2",12345)
+                client.connect(context)
                 Column(Modifier.fillMaxSize()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Title("Secure Hotel")
@@ -52,7 +54,7 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(16.dp)) // Añadir espacio entre el listado y el botón
                     PetitionButton(
                         onConfirm = {
-
+                            client.sendMessage("Prueba")
                         }
                     )
                 }
