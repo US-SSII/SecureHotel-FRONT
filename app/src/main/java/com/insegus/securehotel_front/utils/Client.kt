@@ -3,7 +3,9 @@ package com.insegus.securehotel_front.utils
 import android.content.Context
 import android.util.Log
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
+import java.net.SocketException
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 
@@ -30,17 +32,23 @@ class Client(private val host: String, private val port: Int){
             Log.e("ERROR SENDING", "Error: $e")
         }
     }
-    fun receiveMessage(){
+    fun receiveMessage() {
         try {
-            val response = BufferedReader(InputStreamReader(clientSocket!!.getInputStream()))
-            val receivedMessage = response.readLine()
-            Log.d("RESPONSE", "Response Received: $receivedMessage")
-        }
-        catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("ERROR RECEIVING", "Error: $e")
+            BufferedReader(InputStreamReader(clientSocket!!.getInputStream())).use { reader ->
+                Log.d("RECEIVING", "Waiting for response...")
+
+                val receivedMessage = reader.readLine()
+                Log.d("RESPONSE", "Response Received: $receivedMessage")
+            }
+        } catch (e: SocketException) {
+            Log.e("SOCKET ERROR", "Socket exception: ${e.message}")
+        } catch (e: IOException) {
+            Log.e("IO ERROR", "I/O exception: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("ERROR RECEIVING", "Error: ${e.message}")
         }
     }
+
     fun close(){
         try{
             clientSocket!!.close()
