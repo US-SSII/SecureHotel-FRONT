@@ -23,13 +23,6 @@ class Client(private val host: String, private val port: Int){
         clientSocket = socketFactory.createSocket(host, port) as SSLSocket
         clientSocket!!.startHandshake()
     }
-    fun connect2(context: Context){
-        val socketFactory = generateSSLContext(context).socketFactory
-        val sslSocket = socketFactory.createSocket(host, port) as SSLSocket
-
-        sslSocket.startHandshake()
-
-    }
     fun sendMessage(message:String){
         try{
             val outputStream = clientSocket!!.getOutputStream()
@@ -62,14 +55,6 @@ class Client(private val host: String, private val port: Int){
             e.printStackTrace()
             Log.e("ERROR CLOSING", "Error: $e")
         }
-    }
-}
-class ConnectTask(private val context: Context, private val client: Client) : AsyncTask<Void, Void, Void>() {
-    override fun doInBackground(vararg params: Void?): Void? {
-        // Perform network operation here using the client object
-        client.connect2(context)
-        Log.d("CONNECT", "Connecting to server...")
-        return null
     }
 }
 

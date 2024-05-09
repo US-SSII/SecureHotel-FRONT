@@ -1,7 +1,6 @@
 package com.insegus.securehotel_front
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -23,14 +22,15 @@ import com.insegus.securehotel_front.ui.components.PetitionButton
 import com.insegus.securehotel_front.ui.components.Title
 import com.insegus.securehotel_front.ui.theme.SecureHotelFRONTTheme
 import com.insegus.securehotel_front.utils.Client
-import com.insegus.securehotel_front.utils.ConnectTask
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.text.DateFormat
 import java.util.Date
+
 class MainActivity : ComponentActivity() {
 
 
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             val client = Client("10.0.2.2",12345)
-            //val connectTask = ConnectTask(context, client)
+            val corutineScope = rememberCoroutineScope()
 
             SecureHotelFRONTTheme {
                 // A surface container using the 'background' color from the theme
@@ -55,7 +55,6 @@ class MainActivity : ComponentActivity() {
                     withContext(Dispatchers.IO) {
                         // Realiza la conexión en un hilo de fondo (IO) utilizando Coroutines
                         client.connect(context)
-                        client.sendMessage("pito")
                     }
                 }
                 Column(Modifier.fillMaxSize()) {
@@ -74,7 +73,6 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(16.dp)) // Añadir espacio entre el listado y el botón
                     PetitionButton(
                         onConfirm = {
-
                             val selectedMaterials = materials.filter { it.isSelected }
                             val currentDateTime = DateFormat.getDateTimeInstance().format(Date())
                             val clientPetitions = selectedMaterials.map { material ->
@@ -86,8 +84,10 @@ class MainActivity : ComponentActivity() {
                                     orderDate = currentDateTime
                                 )
                             }
-
-                            Log.d("Petitions", clientPetitions.toString())
+                            val clientPetitionsJson = Json.encodeToString(clientPetitions)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                client.sendMessage(clientPetitionsJson)
+                            }
                         }
                     )
 
