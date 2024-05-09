@@ -44,7 +44,7 @@ fun MaterialRow(
             .padding(16.dp)
             .clickable {
                 isSelected = !isSelected
-                onMaterialUpdate(material.copy(isSelected = isSelected))
+                onMaterialUpdate(material.copy(isSelected = isSelected, amount = amount))
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -52,7 +52,7 @@ fun MaterialRow(
             checked = isSelected,
             onCheckedChange = {
                 isSelected = it
-                onMaterialUpdate(material.copy(isSelected = it))
+                onMaterialUpdate(material.copy(isSelected = it, amount = amount))
             },
             colors = CheckboxDefaults.colors(
                 checkedColor = Color.Blue // Cambiar color del checkbox
@@ -75,7 +75,7 @@ fun MaterialRow(
                 val parsedValue = newValue.toIntOrNull()
                 if (parsedValue != null && parsedValue in 1..300) {
                     amount = newValue
-                    onMaterialUpdate(material.copy(amount = newValue))
+                    onMaterialUpdate(material.copy(amount = newValue, isSelected = isSelected))
                 }
             },
             singleLine = true,

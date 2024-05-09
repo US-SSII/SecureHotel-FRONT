@@ -2,6 +2,7 @@ package com.insegus.securehotel_front
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -83,6 +84,7 @@ class MainActivity : ComponentActivity() {
                     PetitionButton(
                         onConfirm = {
                             val selectedMaterials = materials.filter { it.isSelected }
+                            Log.d("Selected materials", materials.toString())
                             val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                             val currentDateTime = dateFormat.format(Date())
 
