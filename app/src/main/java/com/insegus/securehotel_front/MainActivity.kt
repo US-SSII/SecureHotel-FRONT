@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                             val clientPetitionsJson = Json.encodeToString(clientPetitions)
                             CoroutineScope(Dispatchers.IO).launch {
                                 client.sendMessage(clientPetitionsJson)
-                                client.receiveMessage(context)
+                                client.receiveMessage()
                             }
                         }
                     )
