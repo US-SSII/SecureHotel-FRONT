@@ -98,13 +98,15 @@ class MainActivity : ComponentActivity() {
                                     clientId = it,
                                     nameMaterial = material.name,
                                     amount = material.amount.toInt(),
-                                    digitalSignature = signPetition(currentDateTime.toByteArray(), keyPair.private),
+                                    digitalSignature = signPetition(currentDateTime.toByteArray(Charsets.UTF_8), keyPair.private),
+                                    publicKey = Base64.getEncoder().encodeToString(keyPair.public.encoded),
                                     orderDate = currentDateTime
                                 )
                             }
                             val clientPetitionsJson = Json.encodeToString(clientPetitions)
                             CoroutineScope(Dispatchers.IO).launch {
                                 client.sendMessage(clientPetitionsJson)
+                                client.receiveMessage()
                             }
                         }
                     )

@@ -8,5 +8,6 @@ data class ClientPetition(
     val nameMaterial: String,
     val amount: Int,
     val digitalSignature: String,
+    val publicKey: String,
     val orderDate: String
 )

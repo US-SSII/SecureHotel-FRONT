@@ -1,16 +1,11 @@
 package com.insegus.securehotel_front.utils
 
 import android.content.Context
-import android.os.AsyncTask
 import android.util.Log
-import org.xml.sax.InputSource
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.net.InetSocketAddress
-import java.net.URL
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
-import javax.xml.parsers.SAXParserFactory
 
 
 class Client(private val host: String, private val port: Int){
@@ -35,7 +30,7 @@ class Client(private val host: String, private val port: Int){
             Log.e("ERROR SENDING", "Error: $e")
         }
     }
-    fun recieveMessage(){
+    fun receiveMessage(){
         try {
             val response = BufferedReader(InputStreamReader(clientSocket!!.getInputStream()))
             val receivedMessage = response.readLine()
