@@ -1,8 +1,10 @@
 package com.insegus.securehotel_front
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,29 +30,36 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.text.DateFormat
+import java.security.KeyPair
+import java.security.PrivateKey
+import java.text.SimpleDateFormat
+import java.util.Base64
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var keyPair: KeyPair
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val context = LocalContext.current
-            val client = Client("10.0.2.2",12345)
-            val corutineScope = rememberCoroutineScope()
+            val client = Client("10.0.2.2", 12345)
+            val coroutineScope = rememberCoroutineScope()
 
             SecureHotelFRONTTheme {
                 // A surface container using the 'background' color from the theme
-                val materials by remember { mutableStateOf(
-                    mutableListOf(
-                        Material("Camas"),
-                        Material("Sillas"),
-                        Material("Mesas"),
-                        Material("Sillones"),
+                val materials by remember {
+                    mutableStateOf(
+                        mutableListOf(
+                            Material("Camas"),
+                            Material("Sillas"),
+                            Material("Mesas"),
+                            Material("Sillones"),
+                        )
                     )
-                ) }
+                }
                 LaunchedEffect(Unit) {
                     withContext(Dispatchers.IO) {
                         // Realiza la conexión en un hilo de fondo (IO) utilizando Coroutines
@@ -74,13 +83,20 @@ class MainActivity : ComponentActivity() {
                     PetitionButton(
                         onConfirm = {
                             val selectedMaterials = materials.filter { it.isSelected }
-                            val currentDateTime = DateFormat.getDateTimeInstance().format(Date())
+                            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                            val currentDateTime = dateFormat.format(Date())
+
+                            // Verifica si ya se ha generado un par de claves, si no, genera uno nuevo
+                            if (!::keyPair.isInitialized) {
+                                keyPair = DigitalSignatureHelper.generateKeyPair()
+                            }
+
                             val clientPetitions = selectedMaterials.map { material ->
                                 ClientPetition(
                                     clientId = it,
                                     nameMaterial = material.name,
                                     amount = material.amount.toInt(),
-                                    digitalSignature = "YourDigitalSignatureHere",
+                                    digitalSignature = signPetition(currentDateTime.toByteArray(), keyPair.private),
                                     orderDate = currentDateTime
                                 )
                             }
@@ -95,4 +111,11 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun signPetition(data: ByteArray, privateKey: PrivateKey): String {
+        val signature = DigitalSignatureHelper.signData(data, privateKey)
+        return Base64.getEncoder().encodeToString(signature)
+    }
 }
+
